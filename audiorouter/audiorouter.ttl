@@ -1,0 +1,102 @@
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
+@prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix pprops: <http://lv2plug.in/ns/ext/port-props#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+
+
+
+<https://github.com/stivb/oilcanplugins/audiorouter>
+	a lv2:Plugin ;
+	doap:name "OilCan Audiorouter" ;
+	lv2:minorVersion 0 ;
+	lv2:microVersion 7 ;
+	lv2:project <https://github.com/stivb/oilcansteve>;
+	doap:license "GPLv3" ;
+
+	doap:developer [
+	foaf:name "Oil Can Steve";
+	foaf:homepage <https://oilcansteve.uk>;
+	foaf:mbox <mailto:oilcansteve@hotmail.com>;
+	];
+
+	lv2:requiredFeature urid:map ;
+	lv2:optionalFeature lv2:hardRTCapable ;
+
+    rdfs:comment """
+This is an audio router controlled by a midi cc value (max 127) converted to binary to control
+the output ports to which the signal is propogated.  If the number is 1 (i.e 0000001 in binary) then 
+the audio signal only flows through port Out1.  If it is 15 (i.e. 0001111 in binary) it flows
+through ports out1,out2,out4 and out8.  If it is 0 nothings flows.
+""";
+
+
+	lv2:port [
+		a lv2:AudioPort,
+		lv2:InputPort ;
+		lv2:index 0 ;
+		lv2:symbol "AudioIn" ;
+		lv2:name "AudioIn";
+	],
+	[
+		a lv2:AudioPort,
+		lv2:OutputPort ;
+		lv2:index 1 ;
+		lv2:symbol "Out1" ;
+		lv2:name "Out1";
+	],
+	[
+		a lv2:AudioPort,
+		lv2:OutputPort ;
+		lv2:index 2 ;
+		lv2:symbol "Out2" ;
+		lv2:name "Out2";
+	],
+	[
+		a lv2:AudioPort,
+		lv2:OutputPort ;
+		lv2:index 3 ;
+		lv2:symbol "Out4" ;
+		lv2:name "Out4";
+	],
+	[
+		a lv2:AudioPort,
+		lv2:OutputPort ;
+		lv2:index 4 ;
+		lv2:symbol "Out8" ;
+		lv2:name "Out8";
+	],
+	[
+		a lv2:AudioPort,
+		lv2:OutputPort ;
+		lv2:index 5 ;
+		lv2:symbol "Out16" ;
+		lv2:name "Out16";
+	],
+	[
+		a lv2:AudioPort,
+		lv2:OutputPort ;
+		lv2:index 6 ;
+		lv2:symbol "Out32" ;
+		lv2:name "Out32";
+	],
+	[
+		a lv2:AudioPort,
+		lv2:OutputPort ;
+		lv2:index 7 ;
+		lv2:symbol "Out64" ;
+		lv2:name "Out64";
+	],
+	[ 
+		a lv2:InputPort, lv2:ControlPort ; 
+		lv2:index 8 ; 
+		lv2:symbol "GatesBits" ;
+		lv2:name "GatesBits" ; 
+		lv2:default 0; 
+		lv2:minimum 0 ; 
+		lv2:maximum 127;
+		lv2:portProperty lv2:integer ;
+   ].

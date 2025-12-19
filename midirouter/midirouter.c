@@ -155,21 +155,38 @@ void parseForwards (Midirouter* self)
 
 }
 
+void resetPath(Midirouter* self, int pathIndex, uint32_t out_capacity);
+
+void resetPath(Midirouter* self, int pathIndex, uint32_t out_capacity)
+{
+  MidirouterURIs* uris = &self->uris;
+// Send All Notes Off and Pitch Bend to center for all 16 MIDI channels
+  for (int ch = 0; ch < 16; ++ch) {
+    struct { LV2_Atom_Event ev; uint8_t msg[3]; } evt;
+    evt.ev.time.frames = 0;
+    evt.ev.body.type = uris->midi_Event;
+    evt.ev.body.size = 3;
+    evt.msg[0] = 0xB0 | (uint8_t)ch; /* CC status for channel ch (All Notes Off) */
+    evt.msg[1] = 123;               /* All Notes Off */
+    evt.msg[2] = 0;
+    lv2_atom_sequence_append_event(self->ports.midi_out[pathIndex], out_capacity, (LV2_Atom_Event*)&evt);
+    struct { LV2_Atom_Event ev; uint8_t msg[3]; } pb;
+    pb.ev.time.frames = 0;
+    pb.ev.body.type = uris->midi_Event;
+    pb.ev.body.size = 3;
+    pb.msg[0] = 0xE0 | (uint8_t)ch; /* Pitch Bend status for channel ch */
+    pb.msg[1] = 0x00;              /* LSB */
+    pb.msg[2] = 0x40;              /* MSB (center) */
+    lv2_atom_sequence_append_event(self->ports.midi_out[pathIndex], out_capacity, (LV2_Atom_Event*)&pb);
+  }
+
+}
 
   static void
 run(LV2_Handle instance, uint32_t sample_count)
 {
   Midirouter*     self = (Midirouter*)instance;
   MidirouterURIs* uris = &self->uris;
-
-
-  if (self->currGatesBits != (int) *self->ports.gatesBits)
-  {
-    parseForwards(self);
-  }
-
-
-  
 
   // Get the capacity
   const uint32_t out_capacity = self->ports.midi_out[0]->atom.size;
@@ -179,40 +196,22 @@ run(LV2_Handle instance, uint32_t sample_count)
     self->ports.midi_out[i]->atom.type = self->ports.midi_in->atom.type;  
   }
 
-  for (int i = 0; i < 7; ++i) {
-    if (!self->pathNeedsResetting[i]) continue;
 
-    /* All Notes Off (Control Change 123) */
-    {
-      //lv2_log_note(&self->logger, "Message for midipanic on path  %d", i);
-      for (int ch = 0; ch < 16; ++ch) {
-        struct { LV2_Atom_Event ev; uint8_t msg[3]; } evt;
-        evt.ev.time.frames = 0;
-        evt.ev.body.type = uris->midi_Event;
-        evt.ev.body.size = 3;
-        evt.msg[0] = 0xB0 | (uint8_t)ch; /* CC status for channel ch (All Notes Off) */
-        evt.msg[1] = 123;               /* All Notes Off */
-        evt.msg[2] = 0;
-        lv2_atom_sequence_append_event(self->ports.midi_out[i], out_capacity, (LV2_Atom_Event*)&evt);
+  if (self->currGatesBits != (int) *self->ports.gatesBits)
+  {
+    parseForwards(self);
+    for (int i = 0; i < 7; ++i) {
+      if (self->pathNeedsResetting[i]) {
+        resetPath(self, i, out_capacity);
+        self->pathNeedsResetting[i] = false;
       }
     }
-
-    /* Pitch Bend to center (8192 -> LSB=0x00, MSB=0x40) */
-    {
-      //lv2_log_note(&self->logger, "Message for pitchbend reset on path  %d", i);
-        for (int ch = 0; ch < 16; ++ch) {
-        struct { LV2_Atom_Event ev; uint8_t msg[3]; } pb;
-        pb.ev.time.frames = 0;
-        pb.ev.body.type = uris->midi_Event;
-        pb.ev.body.size = 3;
-        pb.msg[0] = 0xE0 | (uint8_t)ch; /* Pitch Bend status for channel ch */
-        pb.msg[1] = 0x00;              /* LSB */
-        pb.msg[2] = 0x40;              /* MSB (center) */
-        lv2_atom_sequence_append_event(self->ports.midi_out[i], out_capacity, (LV2_Atom_Event*)&pb);
-      }
-    }
-    self->pathNeedsResetting[i] = false;
+   
   }
+
+
+
+  
   
   // Read incoming events
   LV2_ATOM_SEQUENCE_FOREACH (self->ports.midi_in, ev) {

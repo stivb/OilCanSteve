@@ -1,19 +1,5 @@
 #!/usr/bin/make -f
-PARENTDIR = $(shell basename $(dir $(abspath $(dir $$PWD))))
 
-# this part (up until "else") is to set compilation just for locally (not for mod)
-ifeq ($(PARENTDIR),lv2course)
-
-$(info    THE VAR  is $(PARENTDIR))
-CC=gcc
-CFLAGS=-fvisibility=hidden -fPIC -Wl,-Bstatic -Wl,-Bdynamic -Wl,--as-needed -shared -pthread `pkg-config --cflags lv2` -lm `pkg-config --libs lv2`
-FOLDER=$(shell basename $(CURDIR))
-
-compile: $(FOLDER).c
-	$(CC) $(CFLAGS) $(FOLDER).c -o $(FOLDER).so
-
-else
-# this part compiles for mod
 include Makefile.mk
 
 # ---------replace _LC_LIB_NAME_with the actual dev folder name -----------------

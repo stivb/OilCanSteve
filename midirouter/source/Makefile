@@ -38,7 +38,7 @@ install: build
 	install -m 644 *.ttl $(DESTDIR)$(PREFIX)/lib/lv2/$(BUNDLEDIR)/
 
 # --------------------------------------------------------------
-endif
+
 
 
 

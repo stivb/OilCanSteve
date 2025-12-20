@@ -3,7 +3,7 @@
 # midirouter
 #
 ######################################
-MIDIROUTER_VERSION = e5c5373fa5350c5917d63b35a744015cb2ade66e
+MIDIROUTER_VERSION = 5b8fb01bf4ea5c6d94896b022b2f32fbdc8d2b63
 MIDIROUTER_SITE = https://github.com/stivb/OilCanSteve.git
 MIDIROUTER_SITE_METHOD = git
 MIDIROUTER_BUNDLES = midirouter.lv2

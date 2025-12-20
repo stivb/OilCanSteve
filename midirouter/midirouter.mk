@@ -3,7 +3,7 @@
 # midirouter
 #
 ######################################
-MIDIROUTER_VERSION = 5b8fb01bf4ea5c6d94896b022b2f32fbdc8d2b63
+MIDIROUTER_VERSION = 0bde3774bca687317008ac7d64ba9682dbf8293c
 MIDIROUTER_SITE = https://github.com/stivb/OilCanSteve.git
 MIDIROUTER_SITE_METHOD = git
 MIDIROUTER_BUNDLES = midirouter.lv2
@@ -16,7 +16,7 @@ endef
 
 define MIDIROUTER_INSTALL_TARGET_CMDS
 	$(MIDIROUTER_TARGET_MAKE) install DESTDIR=$(TARGET_DIR)
-	cp -rv $(@D)/midirouter.lv2 $(TARGET_DIR)/usr/lib/lv2/
+	cp -rv $(@D)/midirouter/midirouter.lv2 $(TARGET_DIR)/usr/lib/lv2/
 endef
 
 $(eval $(generic-package))

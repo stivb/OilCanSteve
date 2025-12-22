@@ -31,9 +31,14 @@ clean:
 
 # --------------------------------------------------------------
 
+# Install target: Compiles the project and installs LV2 plugin files
+# Creates the destination directory structure for LV2 plugins
+# Copies compiled shared objects (.so files) with read permissions (644)
+# Copies LV2 Turtle definition files (.ttl) with read permissions (644)
+# to the LV2 plugin bundle directory at $(DESTDIR)$(PREFIX)/lib/lv2/$(BUNDLEDIR)
+# This is typically used for installing audio plugin bundles on Linux systems
 install: build
 	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(BUNDLEDIR)
-
 	install -m 644 *.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(BUNDLEDIR)/
 	install -m 644 *.ttl $(DESTDIR)$(PREFIX)/lib/lv2/$(BUNDLEDIR)/
 
